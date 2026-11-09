@@ -1,0 +1,50 @@
+---
+title: "Analyse descriptive"
+format: pdf
+author: "BOUAJAJA Iheb/DUGUET Baptiste/CORTINAS GARCIA Elena/LEDROIT Tessa"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: no
+    toc_depth: 2
+    number_section: yes
+  word_document:
+    toc: yes
+    toc_depth: '2'
+institute: INSA Toulouse
+geometry: margin=0.5in
+header-includes:
+- \usepackage{dsfont}
+- \usepackage{color}
+- \newcommand{\1}{\mathds{1}}
+- \usepackage{amsmath, amssymb}
+---
+
+```{r setup,include=FALSE}
+knitr::opts_chunk$set(echo=FALSE,message = FALSE, warning = FALSE,fig.width=15, fig.height=6, dpi=300)
+
+library(reticulate)
+library(ggplot2)
+library(corrplot)
+library(FactoMineR)
+library(factoextra)
+library(gridExtra)
+library(BioStatR)
+library(forcats)
+library(reshape2)
+library(mclust) 
+library(cluster)
+library(ppclust)
+library(circlize)
+library(ggalluvial)
+library(clusterSim)
+library(dbscan)
+library(seriation)
+library(grid)
+library(knitr)
+library(stringr)
+```
+
+\vspace{1cm}
+
+# Analyse descriptive
