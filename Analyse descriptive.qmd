@@ -87,6 +87,128 @@ cohérent : poids en rapport avec imc, cholesterol total + bon cholesterol, pres
 
 # qualitatives
 
+```{r}
+str(Data)
+```
+
+```{r}
+#Résumé de la variable Gender
+table(Data$Gender)
+levels(Data$Gender)
+
+#Résumé de la variable Smoking status
+table(Data$Smoking_Status)
+levels(Data$Smoking_Status)
+
+#Résumé de la variable Alcohol_Consumption
+table(Data$Alcohol_Consumption)
+levels(Data$Alcohol_Consumption)
+
+#Résumé de la variable Physical_Activity_Level
+table(Data$Physical_Activity_Level)
+levels(Data$Physical_Activity_Level)
+
+#Résumé de la variable Family_History
+table(Data$Family_History)
+levels(Data$Family_History)
+
+#Résumé de la variable Heart_Disease_Risk
+table(Data$Heart_Disease_Risk)
+levels(Data$Heart_Disease_Risk)
+
+```
+
+```{r}
+g1<-ggplot(Data, aes(x=Gender))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+g2<-ggplot(Data, aes(x = Gender)) +  
+  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
+
+df <- data.frame(group = levels(Data$Gender),value = as.vector(table(Data$Gender))/nrow(Data))
+g3<-ggplot(df, aes(x="", y=value, fill=group))+
+  geom_bar(width = 1, stat = "identity")+ 
+  coord_polar("y", start=0)+ 
+  theme(legend.position="bottom")
+grid.arrange(g3,g1,g2,ncol=3)
+```
+
+```{r}
+g1<-ggplot(Data, aes(x=Smoking_Status))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+g2<-ggplot(Data, aes(x = Smoking_Status)) +  
+  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
+
+df <- data.frame(group = levels(Data$Smoking_Status),value = as.vector(table(Data$Smoking_Status))/nrow(Data))
+g3<-ggplot(df, aes(x="", y=value, fill=group))+
+  geom_bar(width = 1, stat = "identity")+ 
+  coord_polar("y", start=0)+ 
+  theme(legend.position="bottom")
+grid.arrange(g3,g1,g2,ncol=3)
+```
+
+```{r}
+g1<-ggplot(Data, aes(x=Alcohol_Consumption))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+g2<-ggplot(Data, aes(x = Alcohol_Consumption)) +  
+  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
+
+df <- data.frame(group = levels(Data$Alcohol_Consumption),value = as.vector(table(Data$Alcohol_Consumption))/nrow(Data))
+g3<-ggplot(df, aes(x="", y=value, fill=group))+
+  geom_bar(width = 1, stat = "identity")+ 
+  coord_polar("y", start=0)+ 
+  theme(legend.position="bottom")
+grid.arrange(g3,g1,g2,ncol=3)
+```
+
+```{r}
+g1<-ggplot(Data, aes(x=Physical_Activity_Level))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+g2<-ggplot(Data, aes(x = Physical_Activity_Level)) +  
+  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
+
+df <- data.frame(group = levels(Data$Physical_Activity_Level),value = as.vector(table(Data$Physical_Activity_Level))/nrow(Data))
+g3<-ggplot(df, aes(x="", y=value, fill=group))+
+  geom_bar(width = 1, stat = "identity")+ 
+  coord_polar("y", start=0)+ 
+  theme(legend.position="bottom")
+grid.arrange(g3,g1,g2,ncol=3)
+
+```
+
+```{r}
+g1<-ggplot(Data, aes(x=Family_History))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+g2<-ggplot(Data, aes(x = Family_History)) +  
+  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
+
+df <- data.frame(group = levels(Data$Family_History),value = as.vector(table(Data$Family_History))/nrow(Data))
+g3<-ggplot(df, aes(x="", y=value, fill=group))+
+  geom_bar(width = 1, stat = "identity")+ 
+  coord_polar("y", start=0)+ 
+  theme(legend.position="bottom")
+grid.arrange(g3,g1,g2,ncol=3)
+```
+
+```{r}
+g1<-ggplot(Data, aes(x=Heart_Disease_Risk))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+g2<-ggplot(Data, aes(x = Heart_Disease_Risk)) +  
+  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
+
+df <- data.frame(group = levels(Data$Heart_Disease_Risk),value = as.vector(table(Data$Heart_Disease_Risk))/nrow(Data))
+g3<-ggplot(df, aes(x="", y=value, fill=group))+
+  geom_bar(width = 1, stat = "identity")+ 
+  coord_polar("y", start=0)+ 
+  theme(legend.position="bottom")
+grid.arrange(g3,g1,g2,ncol=3)
+```
+
 # quantitatives
 
 # bidimensionnel : qualitatives x2
