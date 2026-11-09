@@ -57,6 +57,8 @@ Data$Alcohol_Consumption = as.factor(Data$Alcohol_Consumption)
 Data$Physical_Activity_Level = as.factor(Data$Physical_Activity_Level)
 Data$Family_History = as.factor(Data$Family_History)
 Data$Heart_Disease_Risk = as.factor(Data$Heart_Disease_Risk)
+summary(Data)
+
 vars_quant <- Data[, sapply(Data, is.numeric)]
 moyennes <- sapply(vars_quant, mean)
 ecarts_types <- sapply(vars_quant, sd)
