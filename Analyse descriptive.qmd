@@ -48,3 +48,35 @@ library(stringr)
 \vspace{1cm}
 
 # Analyse descriptive
+
+```{r}
+Data = read.table("Data_Projet_4modIA_2627.txt")
+Data$Gender = as.factor(Data$Gender)
+Data$Smoking_Status = as.factor(Data$Smoking_Status)
+Data$Alcohol_Consumption = as.factor(Data$Alcohol_Consumption)
+Data$Physical_Activity_Level = as.factor(Data$Physical_Activity_Level)
+Data$Family_History = as.factor(Data$Family_History)
+Data$Heart_Disease_Risk = as.factor(Data$Heart_Disease_Risk)
+vars_quant <- Data[, sapply(Data, is.numeric)]
+moyennes <- sapply(vars_quant, mean)
+ecarts_types <- sapply(vars_quant, sd)
+print("Moyennes :")
+print(moyennes)
+print("Ecarts-types :")
+print(ecarts_types)
+
+# Calcul de la matrice de corrélation des variables quantitatives
+mat_corr <- cor(vars_quant)
+# Affichage textuel de la matrice
+print(round(mat_corr, 2))
+# Visualisation grapgique
+corrplot(mat_corr,
+         method="color",
+         type = "upper",
+         addCoef.col = "black",
+         tl.col = "black",
+         tl.srt = 45,
+         diag = FALSE,
+         title = "Matrice des corrélations.",
+         mar = c(0, 0, 2, 0))
+```
