@@ -84,3 +84,13 @@ corrplot(mat_corr,
 ```
 
 cohérent : poids en rapport avec imc, cholesterol total + bon cholesterol, pression artérielle systolique + diastolique
+
+# qualitatives
+
+# quantitatives
+
+# bidimensionnel : qualitatives x2
+
+# bidimensionnel : quantitatives x2
+
+# bidimensionnel : quali x quanti
