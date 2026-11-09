@@ -92,5 +92,63 @@ cohérent : poids en rapport avec imc, cholesterol total + bon cholesterol, pres
 # bidimensionnel : qualitatives x2
 
 # bidimensionnel : quantitatives x2
+Pour l'analyse bidimensionnelle quantitative, on choisit d'abord de représenter la matrice de corrélation entre chaque variable quantitative :
+
+```{r}
+
+vars_quant <- Data[, sapply(Data, is.numeric)]
+moyennes <- sapply(vars_quant, mean)
+ecarts_types <- sapply(vars_quant, sd)
+
+
+# Calcul de la matrice de corrélation des variables quantitatives
+mat_corr <- cor(vars_quant)
+# Affichage textuel de la matrice
+print(round(mat_corr, 2))
+# Visualisation grapgique
+corrplot(mat_corr,
+         method="color",
+         type = "upper",
+         addCoef.col = "black",
+         tl.col = "black",
+         tl.srt = 45,
+         diag = FALSE,
+         title = "Matrice des corrélations.",
+         mar = c(0, 0, 2, 0))
+
+```
+On constate une forte corrélation de 0.89 entre Cholestérol total et Choléstérol LDL, ce qui est attendu car le LDL est une composante du cholestérol total. On retrouve la même chose entre le pression artérielle systolique et diastolique avec une corrélation de 0.89 également. 
+On constate également une corrélation de 0.62 entre la taille et le poids, ce qui est plutot logique, en général plus on est grand, plus on est lourd. De plus l'IMC et le poids sont corrélés avec un coefficient de 0.82
+Moins attendu, on remarque que l'age est corrélé avec la pression sanguine et le cholesterol avec des coefficients de 0.45. 
+Finalement, on voit que le cholestérol HDL est corrélé avec la taille (coeff -0.35), le poids (coeff -0.5), et l'IMC (coeff -0.39).
+
+Par la suite, on se propose de tracer le nuage de points entre le cholesterol HDL et la taille, puis le poids, afin d'investiguer un potentiel lien linéaire.
+On tracera également le nuage de points entre l'age et la pression artérielle systolique, diastolique et le cholesterol total. 
+
+```{r}
+par(mfrow = c(1, 2))   # 1 ligne, 2 colonnes il faut bien lancer toute la cellule pour que les deux graphiques s'affichent dans la meme fenetre
+
+plot(vars_quant$Cholesterol_HDL, vars_quant$Weight_kg,
+     xlab = "Cholestérol HDL (mg/dL)", ylab = "Poids (kg)")
+plot(vars_quant$Cholesterol_HDL, vars_quant$Height_cm,
+     xlab = "Cholestérol HDL (mg/dL)", ylab = "Taille (cm)")
+
+
+
+```
+Le nuage de point du poids en fonction du cholestérol HDL a un écart type moindre que celui de la taille. C'est pourquoi on voudrait plutôt imaginer une régression linéaire sur le premier nuage plutot que sur le second. Intéressons nous à présent au lien entre l'age et la pression artérielle / cholestérol.
+
+```{r}
+par(mfrow = c(1, 3))
+
+plot(vars_quant$Age, vars_quant$Systolic_BP,
+     xlab = "Âge (années)", ylab = "Pression systolique (mmHg)")
+plot(vars_quant$Age, vars_quant$Diastolic_BP,
+     xlab = "Âge (années)", ylab = "Pression diastolique (mmHg)")
+plot(vars_quant$Age, vars_quant$Cholesterol_Total,
+     xlab = "Âge (années)", ylab = "Cholestérol total (mg/dL)")
+  
+```
+Ici encore, on pourrait envisager une régression linéaire sur chacun de ces nuages de points. Celui de la presion systolique a un ecart type un peu plus faible que celui de la pression diastolique, c'est pourquoi une régression sur le premier nuage ferait plus de sens. 
 
 # bidimensionnel : quali x quanti
