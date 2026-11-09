@@ -80,3 +80,5 @@ corrplot(mat_corr,
          title = "Matrice des corrélations.",
          mar = c(0, 0, 2, 0))
 ```
+
+cohérent : poids en rapport avec imc, cholesterol total + bon cholesterol, pression artérielle systolique + diastolique
