@@ -353,3 +353,17 @@ plot(vars_quant$Age, vars_quant$Cholesterol_Total,
 Ici encore, on pourrait envisager une régression linéaire sur chacun de ces nuages de points. Celui de la presion systolique a un ecart type un peu plus faible que celui de la pression diastolique, c'est pourquoi une régression sur le premier nuage ferait plus de sens.
 
 # bidimensionnel : quali x quanti
+
+# bidimensionnel : quali x quanti
+
+```{r}
+ggplot(Data, aes(x = as.factor(Data$Smoking_Status), y = Data$Age, fill = as.factor(Data$Smoking_Status))) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Distribution de l'âge selon le statut tabagique",
+    x = "Statut Fumeur (0 = Non, 1 = Oui)",
+    y = "Âge"
+  )
+```
+
+La dispersion est comparable entre les 2 groupes, bien que l'on observe une amplitude plus forte chez les fumeurs.
