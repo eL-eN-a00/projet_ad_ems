@@ -87,190 +87,97 @@ cohérent : poids en rapport avec imc, cholesterol total + bon cholesterol, pres
 
 # qualitatives
 
-```{r}
-str(Data)
-```
-
-```{r}
-#Résumé de la variable Gender
-table(Data$Gender)
-levels(Data$Gender)
-
-#Résumé de la variable Smoking status
-table(Data$Smoking_Status)
-levels(Data$Smoking_Status)
-
-#Résumé de la variable Alcohol_Consumption
-table(Data$Alcohol_Consumption)
-levels(Data$Alcohol_Consumption)
-
-#Résumé de la variable Physical_Activity_Level
-table(Data$Physical_Activity_Level)
-levels(Data$Physical_Activity_Level)
-
-#Résumé de la variable Family_History
-table(Data$Family_History)
-levels(Data$Family_History)
-
-#Résumé de la variable Heart_Disease_Risk
-table(Data$Heart_Disease_Risk)
-levels(Data$Heart_Disease_Risk)
-
-```
-
-```{r}
-g1<-ggplot(Data, aes(x=Gender))+ 
-  geom_bar()+
-  ylab("")+ggtitle("Effectifs")
-g2<-ggplot(Data, aes(x = Gender)) +  
-  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
-
-df <- data.frame(group = levels(Data$Gender),value = as.vector(table(Data$Gender))/nrow(Data))
-g3<-ggplot(df, aes(x="", y=value, fill=group))+
-  geom_bar(width = 1, stat = "identity")+ 
-  coord_polar("y", start=0)+ 
-  theme(legend.position="bottom")
-grid.arrange(g3,g1,g2,ncol=3)
-```
-
-```{r}
-g1<-ggplot(Data, aes(x=Smoking_Status))+ 
-  geom_bar()+
-  ylab("")+ggtitle("Effectifs")
-g2<-ggplot(Data, aes(x = Smoking_Status)) +  
-  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
-
-df <- data.frame(group = levels(Data$Smoking_Status),value = as.vector(table(Data$Smoking_Status))/nrow(Data))
-g3<-ggplot(df, aes(x="", y=value, fill=group))+
-  geom_bar(width = 1, stat = "identity")+ 
-  coord_polar("y", start=0)+ 
-  theme(legend.position="bottom")
-grid.arrange(g3,g1,g2,ncol=3)
-```
-
-```{r}
-g1<-ggplot(Data, aes(x=Alcohol_Consumption))+ 
-  geom_bar()+
-  ylab("")+ggtitle("Effectifs")
-g2<-ggplot(Data, aes(x = Alcohol_Consumption)) +  
-  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
-
-df <- data.frame(group = levels(Data$Alcohol_Consumption),value = as.vector(table(Data$Alcohol_Consumption))/nrow(Data))
-g3<-ggplot(df, aes(x="", y=value, fill=group))+
-  geom_bar(width = 1, stat = "identity")+ 
-  coord_polar("y", start=0)+ 
-  theme(legend.position="bottom")
-grid.arrange(g3,g1,g2,ncol=3)
-```
-
-```{r}
-g1<-ggplot(Data, aes(x=Physical_Activity_Level))+ 
-  geom_bar()+
-  ylab("")+ggtitle("Effectifs")
-g2<-ggplot(Data, aes(x = Physical_Activity_Level)) +  
-  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
-
-df <- data.frame(group = levels(Data$Physical_Activity_Level),value = as.vector(table(Data$Physical_Activity_Level))/nrow(Data))
-g3<-ggplot(df, aes(x="", y=value, fill=group))+
-  geom_bar(width = 1, stat = "identity")+ 
-  coord_polar("y", start=0)+ 
-  theme(legend.position="bottom")
-grid.arrange(g3,g1,g2,ncol=3)
-
-```
-
-```{r}
-g1<-ggplot(Data, aes(x=Family_History))+ 
-  geom_bar()+
-  ylab("")+ggtitle("Effectifs")
-g2<-ggplot(Data, aes(x = Family_History)) +  
-  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
-
-df <- data.frame(group = levels(Data$Family_History),value = as.vector(table(Data$Family_History))/nrow(Data))
-g3<-ggplot(df, aes(x="", y=value, fill=group))+
-  geom_bar(width = 1, stat = "identity")+ 
-  coord_polar("y", start=0)+ 
-  theme(legend.position="bottom")
-grid.arrange(g3,g1,g2,ncol=3)
-```
-
-```{r}
-g1<-ggplot(Data, aes(x=Heart_Disease_Risk))+ 
-  geom_bar()+
-  ylab("")+ggtitle("Effectifs")
-g2<-ggplot(Data, aes(x = Heart_Disease_Risk)) +  
-  geom_bar(aes(y = (..count..)/sum(..count..)))+ylab("")+ggtitle("Frequences")
-
-df <- data.frame(group = levels(Data$Heart_Disease_Risk),value = as.vector(table(Data$Heart_Disease_Risk))/nrow(Data))
-g3<-ggplot(df, aes(x="", y=value, fill=group))+
-  geom_bar(width = 1, stat = "identity")+ 
-  coord_polar("y", start=0)+ 
-  theme(legend.position="bottom")
-grid.arrange(g3,g1,g2,ncol=3)
-```
-
 # quantitatives
 
 # bidimensionnel : qualitatives x2
 
+Prenons comme exemple le lien entre `Smoking_Status` et `Heart_Disease_Risk`
+
+```{r}
+table_contingence <- table(Data$Smoking_Status, Data$Heart_Disease_Risk)
+print(table_contingence)
+
+ggplot(Data, aes(x=Data$Gender, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon le genre"),
+  x = "Genre",
+  y = "Proportion",
+  fill = "Risque"
+)
+ggplot(Data, aes(x=Data$Physical_Activity_Level, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon le niveau d'activité physique"),
+  x = "Niveau d'activité physique",
+  y = "Proportion",
+  fill = "Risque"
+)
+ggplot(Data, aes(x=Data$Alcohol_Consumption, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon le taux d'alcool consommé"),
+  x = "Consommation d'alcool",
+  y = "Proportion",
+  fill = "Risque"
+)
+ggplot(Data, aes(x=Data$Family_History, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon les antécédents familiaux"),
+  x = "Antécédents Familiaux",
+  y = "Proportion",
+  fill = "Risque"
+)
+```
+
+## Analyse :
+
+### Table de contingence : statut fumeur (`Smoking_Status`) vs Risque Cardiaque (`Heart_Disease_Level` )
+
+Chez les non-fumeurs (0), la proportion de patients à haut risque cardiovasculaire est d'environ 628/(628+654) = 48%. Chez les fumeurs (1), la proportion à haut-risque monte à 70%. On constate donc que le statut de fumeur est associé à une augmentation de la proportion d'individus présentant un risque cardiaque élevé, bien que le risque reste important dans les deux groupes en raison d'autres facteurs..
+
+### Graphique 1 : Risque cardiaque selon le Genre
+
+Chez les femmes ET chez les hommes, on a 55% environ qui ont un risque élevé. Donc la répartition du risque cardiaque est à peu près identique entre les hommes et les femmes. Dans cet échantillon, le genre ne semble pas être un facteur discriminant significatif pour le niveau de risque cardiaque.
+
+### Graphique 2 : Risque cardiaque selon l'Activité Physique
+
+Observations :
+
+- Niveau 0 (sédentaire) : \~70% à haut risque
+
+- Niveau 1 : \~60% à haut risque
+
+- Niveau 2 : \~52% à haut risque
+
+- Niveau 3 : \~40% à haut risque
+
+On observe une tendance générale à la baisse du risque cardiaque à mesure que le niveau d'activité physique augmente. L'activité physique régulière (niveaux 2 et 3) montre un effet protecteur visible, réduisant la proportion de patients catégorisés en "High Risk".
+
+### Graphique 3 : Risque cardiaque selon la Consommation d'Alcool
+
+Observations :
+
+- None (Aucune) : \~55% à haut risque.
+
+- Moderate (Modérée) : \~55% à haut risque.
+
+- Heavy (Forte) : \~60% à haut risque.
+
+Les profils "Abstinent" et "Consommateur modéré" affichent des proportions de risque cardiaque équivalentes. En revanche, une consommation forte d'alcool (Heavy) est associée à une hausse marquée du risque cardiaque élevé.
+
+### Graphique 4 : Risque cardiaque selon les Antécédents Familiaux
+
+Observations :
+
+- No (Pas d'antécédents) : \~53% à haut risque
+
+- Yes (Antécédents familiaux) : \~68% à haut risque.
+
+C'est la variable catégorielle qui montre l'impact le plus prononcé. La présence d'antécédents familiaux de maladie cardiaque (Yes) augmente significativement la proportion de patients à haut risque (près de 68% contre 53% sans antécédents).
+
+### Synthèse générale :
+
+Les facteurs augmentant le plus la proportion de risque cardiaque élevé dans cet échantillon sont, par ordre d'importance visuelle :
+
+1.  Les antécédents familiaux (impact majeur)
+2.  Une forte consommation d'alcool et la faible activité physique
+3.  Le tabagisme (impact modéré)
+4.  Le genre n'exerce quant à lui aucun effet marqué sur cet échantillon.
+
 # bidimensionnel : quantitatives x2
-Pour l'analyse bidimensionnelle quantitative, on choisit d'abord de représenter la matrice de corrélation entre chaque variable quantitative :
-
-```{r}
-
-vars_quant <- Data[, sapply(Data, is.numeric)]
-moyennes <- sapply(vars_quant, mean)
-ecarts_types <- sapply(vars_quant, sd)
-
-
-# Calcul de la matrice de corrélation des variables quantitatives
-mat_corr <- cor(vars_quant)
-# Affichage textuel de la matrice
-print(round(mat_corr, 2))
-# Visualisation grapgique
-corrplot(mat_corr,
-         method="color",
-         type = "upper",
-         addCoef.col = "black",
-         tl.col = "black",
-         tl.srt = 45,
-         diag = FALSE,
-         title = "Matrice des corrélations.",
-         mar = c(0, 0, 2, 0))
-
-```
-On constate une forte corrélation de 0.89 entre Cholestérol total et Choléstérol LDL, ce qui est attendu car le LDL est une composante du cholestérol total. On retrouve la même chose entre le pression artérielle systolique et diastolique avec une corrélation de 0.89 également. 
-On constate également une corrélation de 0.62 entre la taille et le poids, ce qui est plutot logique, en général plus on est grand, plus on est lourd. De plus l'IMC et le poids sont corrélés avec un coefficient de 0.82
-Moins attendu, on remarque que l'age est corrélé avec la pression sanguine et le cholesterol avec des coefficients de 0.45. 
-Finalement, on voit que le cholestérol HDL est corrélé avec la taille (coeff -0.35), le poids (coeff -0.5), et l'IMC (coeff -0.39).
-
-Par la suite, on se propose de tracer le nuage de points entre le cholesterol HDL et la taille, puis le poids, afin d'investiguer un potentiel lien linéaire.
-On tracera également le nuage de points entre l'age et la pression artérielle systolique, diastolique et le cholesterol total. 
-
-```{r}
-par(mfrow = c(1, 2))   # 1 ligne, 2 colonnes il faut bien lancer toute la cellule pour que les deux graphiques s'affichent dans la meme fenetre
-
-plot(vars_quant$Cholesterol_HDL, vars_quant$Weight_kg,
-     xlab = "Cholestérol HDL (mg/dL)", ylab = "Poids (kg)")
-plot(vars_quant$Cholesterol_HDL, vars_quant$Height_cm,
-     xlab = "Cholestérol HDL (mg/dL)", ylab = "Taille (cm)")
-
-
-
-```
-Le nuage de point du poids en fonction du cholestérol HDL a un écart type moindre que celui de la taille. C'est pourquoi on voudrait plutôt imaginer une régression linéaire sur le premier nuage plutot que sur le second. Intéressons nous à présent au lien entre l'age et la pression artérielle / cholestérol.
-
-```{r}
-par(mfrow = c(1, 3))
-
-plot(vars_quant$Age, vars_quant$Systolic_BP,
-     xlab = "Âge (années)", ylab = "Pression systolique (mmHg)")
-plot(vars_quant$Age, vars_quant$Diastolic_BP,
-     xlab = "Âge (années)", ylab = "Pression diastolique (mmHg)")
-plot(vars_quant$Age, vars_quant$Cholesterol_Total,
-     xlab = "Âge (années)", ylab = "Cholestérol total (mg/dL)")
-  
-```
-Ici encore, on pourrait envisager une régression linéaire sur chacun de ces nuages de points. Celui de la presion systolique a un ecart type un peu plus faible que celui de la pression diastolique, c'est pourquoi une régression sur le premier nuage ferait plus de sens. 
 
 # bidimensionnel : quali x quanti
