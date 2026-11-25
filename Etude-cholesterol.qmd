@@ -43,8 +43,133 @@ library(seriation)
 library(grid)
 library(knitr)
 library(stringr)
+library(car)
 ```
 
-\vspace{1cm}
-
 # Etude de la variable Cholesterol_LDL
+
+## Préparation des données et identification des variables quantitatives
+
+Les variables quantitatives présentes dans le jeu de données sont :
+
+- **Cible :** `Cholesterol_LDL`
+
+- **Explicatives quantitatives :** `Age`, `Height_cm` , `Weight_kg` , `BMI` , `Systolic_BP` , `Diastolic_BP` , `Cholesterol_Total` , `Cholesterol_HDL`
+
+```{r}
+# Importation
+df <- read.table("Data_Projet_4modIA_2627.txt", header = TRUE, stringsAsFactors = FALSE)
+
+# Conversion explicite des variables quantitatives en numérique
+quanti_vars <- c("Age", "Height_cm", "Weight_kg", "BMI",
+                 "Systolic_BP", "Diastolic_BP", "Cholesterol_Total",
+                 "Cholesterol_LDL", "Cholesterol_HDL")
+
+df[quanti_vars] <- lapply(df[quanti_vars], as.numeric)
+
+# Vérification rapide des résumés et corrélations
+summary(df[quanti_vars])
+round(cor(df[quanti_vars], use="complete.obs"), 3)
+```
+
+## Modèle complet avec Cholesterol_Total
+
+### Modélisation et sélection de variables
+
+```{r}
+# Modèle linéaire multiple complet (avec Cholesterol_Total)
+mod_complet <- lm(
+  Cholesterol_LDL ~ Age + Height_cm + Weight_kg + BMI +
+    Systolic_BP + Diastolic_BP + Cholesterol_Total + Cholesterol_HDL,
+  data = df
+)
+
+summary(mod_complet)
+
+# Vérification de la colinéarité
+vif(mod_complet)
+
+# Simplification par sélection pas à pas (AIC ET BIC)
+mod_simpl_aic <- step(mod_complet, direction = "both", trace = FALSE)
+mod_simpl_bic <- step(mod_complet, direction = "both", k = log(nrow(df)), trace = FALSE)
+
+summary(mod_simpl_aic)
+summary(mod_simpl_bic)
+
+# Comparaison emboîtée
+anova(mod_simpl_bic, mod_complet)
+```
+
+### Visualisation des résidus
+
+```{r}
+par(mfrow = c(2, 2))
+plot(mod_complet)
+par(mfrow = c(1, 1))
+
+# Compléments : distribution des résidus studentisés et normalité
+res_stud <- rstudent(mod_complet)
+hist(res_stud, breaks = 30, main = "Histogramme des résidus studentisés",
+     xlab = "Résidus studentisés", col = "lightblue")
+shapiro.test(sample(res_stud, min(5000, length(res_stud))))
+```
+
+**Linéarité** (`Residuals vs Fitted` ) : La courbe rouge reste proche de 0 sans motif courbé marqué. `Cholesterol_LDL` est fortement liée à `Cholesterol_Total` .
+
+**Homoscédasticité** (`Scale-Location` ) : la dispersion des résidus est constante sur toute la gamme des valeurs prédites.
+
+**Normalité** (`Q-Q Residuals` ) : les points s'alignent sur la diagonale.
+
+**Points influents** (`Residuals vs Leverage` ) : Les observations ayant une distance de Cook élevée sont des profils extrêmes (ex: IMC Très élevé, choléstérol très élevé)
+
+## Modèle sans `Cholesterol_Total` et comparaison
+
+### Modélisation et simplification sans `Cholesterol_Total`
+
+```{r}
+# Modèle linéaire multiple sans Cholesterol_Total
+mod_sans_tot <- lm(
+  Cholesterol_LDL ~ Age + Height_cm + Weight_kg + BMI +
+    Systolic_BP + Diastolic_BP + Cholesterol_HDL,
+  data = df
+)
+
+summary(mod_sans_tot)
+vif(mod_sans_tot)
+
+# Simplification (AIC et BIC)
+mod_sans_tot_aic <- step(mod_sans_tot, direction = "both", trace = FALSE)
+mod_sans_tot_bic <- step(mod_sans_tot, direction = "both", k = log(nrow(df)), trace = FALSE)
+
+summary(mod_sans_tot_aic)
+summary(mod_sans_tot_bic)
+
+# Visualisation des résidus du modèle sans Cholesterol_Total
+par(mfrow = c(2,2))
+plot(mod_sans_tot)
+par(mfrow = c(1, 1))
+```
+
+### Tableau synthétique de comparaison
+
+```{r}
+# Fonction utilitaire pour comparer rapidement les deux modèles
+comparer_modeles <- function(m1, m2) {
+  data.frame(
+    Modele = c("Avec Cholesterol_Total", "Sans Cholesterol_Total"),
+    R2 = c(summary(m1)$r.squared, summary(m2)$r.squared),
+    R2_ajuste = c(summary(m1)$adj.r.squared, summary(m2)$adj.r.squared),
+    RSE_sigma = c(summary(m1)$sigma, summary(m2)$sigma),
+    AIC = c(AIC(m1), AIC(m2)),
+    BIC = c(BIC(m1), BIC(m2))
+  )
+}
+
+comparer_modeles(mod_complet, mod_sans_tot)
+```
+
+**Points clés de comparaison :**
+
+- **Qualité d'ajustement (R², R² ajusté, erreur résiduelle** $\hat{\sigma}$) :`Cholesterol_Total` est naturellement le déterminant principal de `Cholesterol_LDL` (puisque le choléstérol total regroupe LDL, HDL et triglycérides). Lorsqu'il est retiré le R² chute nettement et l'erreur type des résidus augmente : le modèle explique beaucoup moins la variance de `Cholesterol_LDL` .
+- **Rôle des autres variables quantitatives (`Age`** , **pression artérielle**, `BMI` **,** `Cholesterol_HDL` ) : En présence de `Cholesterol_Total` , l'effet propre d'autres variables peut être masqué ou atténué car `Cholesterol_Total` capte déjà l'essentiel de l'information lipidique. Sans `Cholesterol_Total` , ces variables (notamment `Age` et `Cholesterol_HDL` ) deviennent statistiquement plus visibles, tout en restant des prédicteurs indirects et plus bruités du LDL.
+- **Intérêt pratique vs précision :** Si l'objectif est une **prédiction précise** de `Cholesterol_LDL` , `Cholesterol_Total` est indispensable. En revanche, si l'on cherche à comprendre comment `Cholesterol_LDL` varie avec des **caractéristiques cliniques de base** (âge, tension, corpulence, HDL) lorsque le bilan lipidique complet n'est pas disponible, le second modèle reste utile mais beaucoup moins précis.
