@@ -85,9 +85,9 @@ corrplot(mat_corr,
 
 cohérent : poids en rapport avec imc, cholesterol total + bon cholesterol, pression artérielle systolique + diastolique
 
-# quantitatives
-
 # qualitatives
+
+# quantitatives
 
 ```{r}
 str(Data)
@@ -351,6 +351,8 @@ plot(vars_quant$Age, vars_quant$Cholesterol_Total,
 ```
 
 Ici encore, on pourrait envisager une régression linéaire sur chacun de ces nuages de points. Celui de la presion systolique a un ecart type un peu plus faible que celui de la pression diastolique, c'est pourquoi une régression sur le premier nuage ferait plus de sens.
+
+# bidimensionnel : quali x quanti
 
 # bidimensionnel : quali x quanti
 
