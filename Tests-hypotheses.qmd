@@ -43,8 +43,11 @@ library(seriation)
 library(grid)
 library(knitr)
 library(stringr)
+
 ```
 
 \vspace{1cm}
 
 # Tests d'hyposthèses
+
+dffgghhh
