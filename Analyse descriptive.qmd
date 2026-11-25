@@ -89,7 +89,6 @@ cohérent : poids en rapport avec imc, cholesterol total + bon cholesterol, pres
 
 # qualitatives
 
-# quantitatives
 
 ```{r}
 str(Data)
@@ -211,6 +210,66 @@ g3<-ggplot(df, aes(x="", y=value, fill=group))+
   coord_polar("y", start=0)+ 
   theme(legend.position="bottom")
 grid.arrange(g3,g1,g2,ncol=3)
+```
+
+#Quantitave
+
+```{r}
+
+
+# Moyenne, variance et écart-type
+
+
+vars_quant <- Data[, sapply(Data, is.numeric)]
+long <- melt(vars_quant)
+
+summary(vars_quant)
+resume <- data.frame(
+  Moyenne    = sapply(vars_quant, mean),
+  Variance   = sapply(vars_quant, var),
+  Ecart_type = sapply(vars_quant, sd)
+)
+kable(round(resume, 2), caption = "Moyenne, variance et écart-type")
+
+# Histogrammes de toutes les variables
+
+  ggplot(long, aes(x = value)) +
+    geom_histogram(bins = 15, color = "black", fill = "white") +
+    facet_wrap(~variable, scales = "free", ncol = 3) +
+    ggtitle("Histo. des effectifs") + xlab("") + ylab("Frequency")
+
+
+# Histogrammes des densités
+
+  ggplot(long, aes(x = value)) +
+    geom_histogram(aes(y = after_stat(density)), bins = 15, color = "black", fill = "white") +
+    geom_density(color = "red") +
+    facet_wrap(~variable, scales = "free", ncol = 3) +
+    ggtitle("Histogrammes des densités") + xlab("") + ylab("Densité")
+
+
+# Les boxplots pour tous les variables quantitatives
+ggplot(melt(Data[, sapply(Data, is.numeric)]),aes(x=variable,y=value))+
+  geom_boxplot()
+
+
+# Focus sur le cholestérol
+summary(Data$Cholesterol_Total)
+
+par(mfrow = c(3, 1))
+Box_Plot_Cholesterol_Total <- boxplot(Data$Cholesterol_Total, horizontal = TRUE,
+                                      main = "Cholestérol total")
+Box_Plot_Cholesterol_LDL   <- boxplot(Data$Cholesterol_LDL, horizontal = TRUE,
+                                      main = "Cholestérol LDL")
+Box_Plot_Cholesterol_HDL   <- boxplot(Data$Cholesterol_HDL, horizontal = TRUE,
+                                      main = "Cholestérol HDL")
+par(mfrow = c(1, 1))
+
+# Valeurs atypiques du HDL
+Box_Plot_Cholesterol_HDL$out
+
+
+
 ```
 
 # bidimensionnel : qualitatives x2
