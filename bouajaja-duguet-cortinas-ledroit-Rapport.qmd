@@ -307,7 +307,8 @@ for(quali in vars_quali) {
 
 
 ```
-```{r}
+
+```{r Distribution quali quanti genre, echo=FALSE, fig.cap="\\label{fig:Distribution quali quanti genre}"}
 # on veux afficher height_cm selon gender, weight_kg selon gender, cholesterol_HDL selon gender, age selon disease_heart_risk, systolic_BP selon disease_heart_risk, diastolic_BP selon disease_heart_risk, cholesterol_total selon disease_heart_risk, cholesterol_LDL selon disease_heart_risk
 
 g1<-ggplot(Data, aes(x = as.factor(Data$Gender), y = Data$Height_cm, fill = as.factor(Data$Gender))) +
@@ -375,7 +376,7 @@ g8<-ggplot(Data, aes(x = as.factor(Data$Heart_Disease_Risk), y = Data$Cholestero
 grid.arrange(g1,g2,g3,ncol=3)
 
 ```
-```{r}
+```{r Distribution quali quanti risque, echo=FALSE, fig.cap="\\label{fig:Distribution quali quanti g risque}"}
 grid.arrange(g4,g5,g6,g7,g8,ncol=3,nrow=2)
 ```
 
@@ -408,7 +409,11 @@ fviz_eig(respca, addlabels = TRUE) +
 
 ```
 
-D'après @fig-acp-eig, les deux premières dimensions concentrent plus de 50% de l'information. On peut choisir de conserver seulement les deux premières dimensions. On représente alors la caractérisation de chaque axe grâce au graphe des variables :
+D'après @fig-acp-eig, les deux premières dimensions concentrent 32,7% et 25,2% de l'inertie, soit un total cumulé de 57,9%. Pour que l’essentiel de l’information contenue dans les données puissent être visualisé dans un espace bidimensionnel il faudrait que l'inertie total cumulée soit de plus de 80%, ce n'est pas le cas ici.
+
+On commence par visualiser l’information contenue dans les données peut être visualisé dans un espace bidimensionnel, en ne conservant que les deux premiers plans factoriels.On pourra par la suite étudier le troisième plan factoriel pour essayer de visualiser les 17,6% d'inertie contenue dans ce plan factoriel.
+
+On représente alors la caractérisation de chaque axe grâce au graphe des variables :
 
 ```{r, echo=FALSE}
 #| label: fig-acp-cercle
@@ -436,25 +441,29 @@ On peut ensuite visualiser le nuage de points pour visualiser chaque individu @f
 ```{r}
 #| label: fig-acp-ind
 
-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Gender)) +
+g1<-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Gender)) +
   labs(title = "Projection des individus sur le premier plan factoriel")
 
-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Heart_Disease_Risk)) +
+g2<-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Heart_Disease_Risk)) +
   labs(title = "Projection des individus sur le premier plan factoriel")
 
-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Smoking_Status)) +
+g3<-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Smoking_Status)) +
   labs(title = "Projection des individus sur le premier plan factoriel")
 
-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Alcohol_Consumption)) +
+g4<-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Alcohol_Consumption)) +
   labs(title = "Projection des individus sur le premier plan factoriel")
 
-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Physical_Activity_Level)) +
+g5<-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Physical_Activity_Level)) +
   labs(title = "Projection des individus sur le premier plan factoriel")
 
-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Family_History)) +
+g6<-fviz_pca_ind(respca, geom = "point",habillage= as.factor(Data$Family_History)) +
   labs(title = "Projection des individus sur le premier plan factoriel")
-
+grid.arrange(g1,g2,ncol=2)
 ```
+```{r,echo=FALSE,include=FALSE}
+grid.arrange(g3,g4,g5,g6,ncol=4)
+```
+
 A commenter +++
 
 On peut également choisir de garder seulement les dimensions 1 et 3. Les composantes principales sont alors différentes :
@@ -466,9 +475,109 @@ fviz_pca_var(respca, axes = c(1, 3), repel = TRUE,
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")) +
   labs(title = "Cercle des corrélations, coloré selon la qualité de représentation (cos2) sur le plan 1-3", color = "cos2")
 ```
+Sur @fig-acp-cercle2, on voit que ces deux axes mettent beaucoup plus en avant les variables de poids et taille sur l'axe 1. En revanche on perd en qualité de représentation sur les variables de l'axe 3.
 A commenter +++ et completer 
 ## Analyse des composantes multiples (ACM)
 
 Afin de visualiser les individus (patients) dans un de faible dimensions à partir des variables qualitatives, nous allons réaliser une analyse des composantes multiples (ACM) 
 
-Sur @fig-acp-cercle2, on voit que ces deux axes mettent beaucoup plus en avant les variables de poids et taille sur l'axe 1. En revanche on perd en qualité de représentation sur les variables de l'axe 3.
+```{r, echo = FALSE}
+# --- ACM : Analyse des Correspondances Multiples ---
+
+# 1. Sélection des variables qualitatives
+
+Data_quali <- Data[, c(
+  "Gender",
+  "Smoking_Status",
+  "Alcohol_Consumption",
+  "Physical_Activity_Level",
+  "Family_History",
+  "Heart_Disease_Risk"
+)]
+
+
+# ACM avec Heart_Disease_Risk comme variable supplémentaire
+resMCA <- MCA(Data_quali, graph = FALSE)
+
+# Tableau des valeurs propres
+resMCA$eig
+
+# Graphique des valeurs propres
+g1 = fviz_screeplot(resMCA, addlabels = TRUE)
+g1
+#Visualisation des modalités
+g2 = fviz_mca(
+  resMCA,
+  invisible = "ind",
+  repel = TRUE,
+  ggtheme = theme_minimal()
+)
+g2
+#4. Visualisation des individus
+g3 = fviz_mca_ind(
+  resMCA,
+  label = "none",
+  habillage = Data_quali$Heart_Disease_Risk,
+  addEllipses = TRUE,
+  ellipse.type = "confidence",
+  alpha.ind = 0.4,
+  pointsize = 1.2,
+  ggtheme = theme_minimal()
+)
+g3
+
+# 5. Contributions des modalités aux axes
+p1 <- fviz_contrib(resMCA, choice = "var", axes = 1, top = 10, title = "Contributions - Axe 1")
+p2 <- fviz_contrib(resMCA, choice = "var", axes = 2, top = 10, title = "Contributions - Axe 2")
+grid.arrange(p1, p2, ncol = 2)
+
+
+
+#etude de la qualité de representation des données
+g4 = fviz_cos2(
+  resMCA,
+  choice = "var",
+  axes = 1:2,
+  top = 15
+)
+g4
+# Liaison des variables qualitatives aux axes (eta2)
+g5 = fviz_mca_var(
+  resMCA,
+  choice = "mca.cor",
+  repel = TRUE,
+  ggtheme = theme_minimal()
+)
+g5
+
+#  Contributions des modalités aux axes
+
+#Contributions à l’axe 1 : L’axe 1 est principalement structuré par les modalités situées sur ses extrémités, notamment Yes (~30 %) et Smoking_Status_1 (~21 %), suivies de Smoking_Status_0 (~13 %) et Physical_Activity_Level_3 (~10 %), qui dépassent le seuil moyen de contribution.   
+#Contributions à l’axe 2 : L’axe 2 est surtout porté par Heavy (~28 %), Physical_Activity_Level_2 (~18 %), Physical_Activity_Level_3 (~17 %) et Moderate (~12 %), avec des contributions plus modestes mais non négligeables de M et F (~9 % chacun).  
+
+#contribution à l'axe 2 
+#Contributions à l’axe 2 : L’axe 2 est surtout porté par Heavy (~28 %), Physical_Activity_Level_2 (~18 %), Physical_Activity_Level_3 (~17 %) et Moderate (~12 %), avec des contributions plus modestes mais non négligeables de M et F (~9 % chacun).
+
+# Interpreation du graphe cos2
+#Qualité de représentation sur le plan (1, 2) (cos2) : Les modalités les mieux représentées sur ces deux premiers axes sont Smoking_Status_1, Smoking_Status_0, Heavy, Yes et No (avec un cos2 autour de 0,42–0,43), suivies de Physical_Activity_Level_3 (approx 0,32) et Physical_Activity_Level_2 (approx 0,28). À l’inverse, Physical_Activity_Level_0 a un cos2 quasi nul et Physical_Activity_Level_1 est sous 0,10 : leur projection dans le plan (1, 2) est donc peu fiable et ne doit pas être surinterprétée.
+
+
+#Interpretation graphes de modalités
+
+#Une Analyse des Correspondances Multiples (ACM) a été réalisée sur les six variables qualitatives du jeu de données. La variable `Heart_Disease_Risk` a été introduite comme variable supplémentaire afin d'étudier sa relation avec les profils identifiés sans intervenir dans la construction des axes factoriels.
+
+#Les deux premières dimensions expliquent respectivement 14,10 % et 13,47 % de l'inertie totale, soit 27,56 % de l'inertie cumulée. La représentation sur ce plan factoriel ne restitue donc qu'une partie de l'information contenue dans les données.
+
+#La première dimension oppose principalement les modalités `Smoking_Status_1`, `Physical_Activity_Level_2` et `Physical_Activity_Level_3`, situées du côté négatif, aux modalités `Smoking_Status_0`, `Family_History_Yes` et aux différentes modalités de consommation d'alcool situées du côté positif.
+
+#La deuxième dimension distingue notamment la modalité `Alcohol_Consumption_Heavy`, fortement positionnée dans la partie supérieure du graphique, des modalités `Alcohol_Consumption_Moderate` et `Physical_Activity_Level_3`, situées dans la partie inférieure.
+
+#La proximité entre certaines modalités suggère des associations entre les caractéristiques des individus. Par exemple, les modalités `Gender_M` et `Smoking_Status_1` présentent une certaine proximité, de même que `Gender_F` et `Alcohol_Consumption_Moderate`. À l'inverse, les modalités éloignées de l'origine, comme `Alcohol_Consumption_Heavy` et `Physical_Activity_Level_3`, contribuent davantage à différencier les profils représentés sur ce plan.
+
+#Enfin, la projection de la variable supplémentaire `Heart_Disease_Risk` montre que les modalités `High Risk` et `Low Risk` sont très proches de l'origine et l'une de l'autre. Les deux premières dimensions ne permettent donc pas de mettre en évidence une séparation nette des individus selon leur niveau de risque cardiovasculaire.
+
+#En conclusion, l'ACM met en évidence certaines associations entre les caractéristiques qualitatives des patients, mais la faible proportion d'inertie expliquée par les deux premiers axes invite à interpréter ces résultats avec prudence.
+
+```
+```
+
