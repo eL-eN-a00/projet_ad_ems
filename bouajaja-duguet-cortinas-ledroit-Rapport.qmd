@@ -43,8 +43,253 @@ library(seriation)
 library(grid)
 library(knitr)
 library(stringr)
+library(ggcorrplot)
 ```
 
 \vspace{1cm}
 
 # Introduction
+
+Dans ce projet on s'interesse au jeu de données synthétiques ”Cardivascular Disease Risk Prediction Dataset”. Ce jeu de données comporte des dossiers médicaux synthétiques de patients spécialement conçus pour prédire le risque de maladie cardiovasculaire.
+
+Le but de ce projet est d'étudier ce jeu de données à l'aide des différentes méthodes apprisent en Analyse de données et Eléments de modélisation statistique.
+
+# Analyse descriptive du jeu de donnée
+
+Afin de pouvoir étudier correctement notre jeu de données nous devons commencer par faire une analyse descriptive du jeu de données afin de pouvoir interpreter correctement nos résultats d'étude
+
+## Statistiques descriptives
+
+On va étudier le jeu de données Cardivascular Disease Risk Prediction Dataset que l'on renommera **Data**.
+
+Le jeu de données **Data** cdes dossiers médicaux synthétiques de patients spécialement conçus pour prédire le risque de maladie cardiovasculaire.Le jeu de données comporte 19 variables pour 15000 patients.
+
+Nous avons extrait de ce jeu de données un échantillon de 2099 observations des 15 variables suivantes :
+
+- *Age* : Age du patient
+- *Gender* : Genre du patient (qualitative à deux modalités)
+- *Height_cm* : Taille du patient en centimètres
+- *Weight_kg* : Poids du patient en kilogrammes
+- *BMI* : Indice de masse corporelle (IMC), calculé à partir de la taille et du poids en kg/m2
+- *Systolic_BP* : Pression artérielle systolique (mmHg)
+- *Diastolic_BP* : Pression artérielle diastolique (mmHg)
+- *Cholesterol_Total* : Cholest´erol sérique total (mg/dL)
+- *Cholesterol_LDL* : Lipoprotéines de basse densité / ≪ mauvais ≫ cholestérol (mg/dL)
+- *Cholesterol_HDL* : Lipoprotéines de haute densité / ≪ bon ≫ cholestérol (mg/dL)
+- *Smoking Status* : Statut tabagique (qualitative \`a deux modalités)
+- *Alcohol_Consumption* : niveau de consommation d’alcool (qualitative à trois modalités)
+- *Physical_Activity_Level* : Niveau d’activité physique (qualitative à quatre modalités)
+- *Family_History* : Antécédents familiaux de maladie cardiaque (qualitative é deux modalités).
+- *Heart_Disease_Risk* : Risque d’accident cardiaque (qualitative à deux modalités) 0 : risque faible, 1 : risque élevé.
+
+on doit pouvoir ajouter la déscription du jeu de données comme dans TP2
+
+```{r}
+Data = read.table("Data_Projet_4modIA_2627.txt")
+Data$Gender = as.factor(Data$Gender)
+Data$Smoking_Status = as.factor(Data$Smoking_Status)
+Data$Alcohol_Consumption = as.factor(Data$Alcohol_Consumption)
+Data$Physical_Activity_Level = as.factor(Data$Physical_Activity_Level)
+Data$Family_History = as.factor(Data$Family_History)
+Data$Heart_Disease_Risk = as.factor(Data$Heart_Disease_Risk)
+```
+
+### Statistiques descriptives unidimensionnelles
+
+#### Variables qualitatives
+
+Dans ce jeu de données nous avons 6 variables qualitatives : (regarder porquoi cela ne fonctionnent pas )
+
+La variable *Gender* contient $K1=$ `r length(levels(Data$Gender))` modalités qui sont `r levels(Data$Gender)`.
+
+La variable *Smoking_Status* contient $K2=$ `r length(levels(Data$Smoking_Status))` modalités qui sont `r levels(Data$Smoking_Status)`.
+
+La variable *Alcohol_Consumption* contient $K3=$ `r length(levels(Data$Alcohol_Consumption))` modalités qui sont `r levels(Data$Alcohol_Consumption)`.
+
+La variable *Physical_Activity_Level* contient $K4=$ `r length(levels(Data$Physical_Activity_Level))` modalités qui sont `r levels(Data$Physical_Activity_Level)`.
+
+La variable *Family_History* contient $K5=$ `r length(levels(Data$Family_History))` modalités qui sont `r levels(Data$Family_History)`.
+
+La variable *Heart_Disease_Risk* contient $K6=$ `r length(levels(Data$Heart_Disease_Risk))` modalités qui sont `r levels(Data$Heart_Disease_Risk)`.
+
+Les Barplots \ref{fig:Barplots} representent les effectifs de chaque variable qualitative en fonctions de leurs modalités :
+
+```{r Barplots, echo=FALSE, fig.cap="\\label{fig:Barplots}Barplots des variables qualitative"}
+
+
+g1<-ggplot(Data, aes(x=Gender))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+
+g2<-ggplot(Data, aes(x=Smoking_Status))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+
+g3<-ggplot(Data, aes(x=Alcohol_Consumption))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+
+g4<-ggplot(Data, aes(x=Physical_Activity_Level))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+
+g5<-ggplot(Data, aes(x=Family_History))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+
+g6<-ggplot(Data, aes(x=Heart_Disease_Risk))+ 
+  geom_bar()+
+  ylab("")+ggtitle("Effectifs")
+
+grid.arrange(g1,g2,g3,g4,g5,g6,ncol=6)
+
+```
+Faire analyse
+
+#### Variables quantitatives
+
+Dans ce jeu de données nous avons 9 variables quantitatives.
+
+Nous avons donc décidé de faire un Violinplot Figure \ref{fig:Violinplots} contenant tous les violinsplots des variables.Ces violinsplots permettent de resumer les variables de manière simple et visuelle, d'identifier les valeurs extremes ,de comprendre la répartition des observations ainsi que de la distribution des variables.
+
+```{r Violinplots, echo=FALSE, fig.cap="\\label{fig:Violinplots}Violinplots des variables quantitatives"}
+# Les boxplots pour toutes les variables quantitatives
+ggplot(melt(Data[, sapply(Data, is.numeric)]),aes(x=variable,y=value))+
+  geom_violin(trim = FALSE) 
+
+```
+Faire analyse
+
+### Statistiques descriptives bi-dimentionnelles
+
+#### 2 variables qualitatives
+Heart_
+Nous pouvons prendre comme exemple le lien entre la variable qualitative `Heart_Disease_Risk` et les 5 autres variables qualitatives.
+
+Nous étudions le lien entre ces variables grâce à un Barplot \ref{fig:Barplots 1}
+
+Expliquer choix de la variable `Heart_Disease_Risk` comme variable qualitative de référence
+
+```{r Barplots 1, echo=FALSE, fig.cap="\\label{fig:Barplots 1}Barplots entre la variable Heart_Disease_Risk et les autres variables quantitatives"}
+table_contingence <- table(Data$Smoking_Status, Data$Heart_Disease_Risk)
+print(table_contingence)
+
+g0<-ggplot(Data, aes(x=Data$Smoking_Status, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon le genre"),
+  x = "Genre",
+  y = "Proportion",
+  fill = "Risque")
+
+g1<-ggplot(Data, aes(x=Data$Gender, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon le genre"),
+  x = "Genre",
+  y = "Proportion",
+  fill = "Risque"
+)
+g2<-ggplot(Data, aes(x=Data$Physical_Activity_Level, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon le niveau d'activité physique"),
+  x = "Niveau d'activité physique",
+  y = "Proportion",
+  fill = "Risque"
+)
+g3<-ggplot(Data, aes(x=Data$Alcohol_Consumption, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon le taux d'alcool consommé"),
+  x = "Consommation d'alcool",
+  y = "Proportion",
+  fill = "Risque"
+)
+g4<-ggplot(Data, aes(x=Data$Family_History, fill=Data$Heart_Disease_Risk)) + geom_bar(position = "fill") + labs(
+  title = ("Risque cardiaque selon les antécédents familiaux"),
+  x = "Antécédents Familiaux",
+  y = "Proportion",
+  fill = "Risque"
+)
+
+grid.arrange(g0,g1,g2,g3,g4,ncol=5)
+
+```
+Table de contingence : statut fumeur (`Smoking_Status`) vs Risque Cardiaque (`Heart_Disease_Level` )
+
+Chez les non-fumeurs (0), la proportion de patients à haut risque cardiovasculaire est d'environ 628/(628+654) = 48%. Chez les fumeurs (1), la proportion à haut-risque monte à 70%. On constate donc que le statut de fumeur est associé à une augmentation de la proportion d'individus présentant un risque cardiaque élevé, bien que le risque reste important dans les deux groupes en raison d'autres facteurs..
+
+Graphique 1 : Risque cardiaque selon le Genre
+
+Chez les femmes ET chez les hommes, on a 55% environ qui ont un risque élevé. Donc la répartition du risque cardiaque est à peu près identique entre les hommes et les femmes. Dans cet échantillon, le genre ne semble pas être un facteur discriminant significatif pour le niveau de risque cardiaque.
+
+Graphique 2 : Risque cardiaque selon l'Activité Physique
+
+Observations :
+
+- Niveau 0 (sédentaire) : \~70% à haut risque
+
+- Niveau 1 : \~60% à haut risque
+
+- Niveau 2 : \~52% à haut risque
+
+- Niveau 3 : \~40% à haut risque
+
+On observe une tendance générale à la baisse du risque cardiaque à mesure que le niveau d'activité physique augmente. L'activité physique régulière (niveaux 2 et 3) montre un effet protecteur visible, réduisant la proportion de patients catégorisés en "High Risk".
+
+Graphique 3 : Risque cardiaque selon la Consommation d'Alcool
+
+Observations :
+
+- None (Aucune) : \~55% à haut risque.
+
+- Moderate (Modérée) : \~55% à haut risque.
+
+- Heavy (Forte) : \~60% à haut risque.
+
+Les profils "Abstinent" et "Consommateur modéré" affichent des proportions de risque cardiaque équivalentes. En revanche, une consommation forte d'alcool (Heavy) est associée à une hausse marquée du risque cardiaque élevé.
+
+Graphique 4 : Risque cardiaque selon les Antécédents Familiaux
+
+Observations :
+
+- No (Pas d'antécédents) : \~53% à haut risque
+
+- Yes (Antécédents familiaux) : \~68% à haut risque.
+
+C'est la variable catégorielle qui montre l'impact le plus prononcé. La présence d'antécédents familiaux de maladie cardiaque (Yes) augmente significativement la proportion de patients à haut risque (près de 68% contre 53% sans antécédents).
+
+Synthèse générale :
+
+Les facteurs augmentant le plus la proportion de risque cardiaque élevé dans cet échantillon sont, par ordre d'importance visuelle :
+
+1.  Les antécédents familiaux (impact majeur)
+2.  Une forte consommation d'alcool et la faible activité physique
+3.  Le tabagisme (impact modéré)
+4.  Le genre n'exerce quant à lui aucun effet marqué sur cet échantillon.
+
+#### 2 variables quantitatives
+
+Pour l'analyse bidimensionnelle quantitative, on choisit d'abord de représenter la matrice de corrélation entre chaque variable quantitative \ref{fig:Matrice de corrélation} :
+
+```{r Matrice de corrélation, echo=FALSE, fig.cap="\\label{fig:Matrice de corrélation}Matrice de corrélation"}
+corrplot(cor(Data[,sapply(Data, is.numeric)]),method="ellipse")
+```
+
+0n constate une forte corrélation de 0.89 entre Cholestérol total et Choléstérol LDL, ce qui est attendu car le LDL est une composante du cholestérol total. On retrouve la même chose entre le pression artérielle systolique et diastolique avec une corrélation de 0.89 également. On constate également une corrélation de 0.62 entre la taille et le poids, ce qui est plutot logique, en général plus on est grand, plus on est lourd. De plus l'IMC et le poids sont corrélés avec un coefficient de 0.82 Moins attendu, on remarque que l'age est corrélé avec la pression sanguine et le cholesterol avec des coefficients de 0.45. Finalement, on voit que le cholestérol HDL est corrélé avec la taille (coeff -0.35), le poids (coeff -0.5), et l'IMC (coeff -0.39).
+
+#### 1 variable quantitative et 1 variable qualitative 
+
+Faire phrase d'intro, commentaire et choix 
+
+```{r}
+ggplot(Data, aes(x = as.factor(Data$Smoking_Status), y = Data$Age, fill = as.factor(Data$Smoking_Status))) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Distribution de l'âge selon le statut tabagique",
+    x = "Statut Fumeur (0 = Non, 1 = Oui)",
+    y = "Âge"
+  )
+```
+## Analyse en composantes principales (ACP)
+
+Afin de visualiser les individus (patients) dans un de faible dimensions à partir des variables quantitatives, nous allons réaliser une analyse en composantes principales (ACP)
+
+
+
+## Analyse des composantes multiples (ACM)
+
+Afin de visualiser les individus (patients) dans un de faible dimensions à partir des variables qualitatives, nous allons réaliser une analyse des composantes multiples (ACM) 
